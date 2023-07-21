@@ -8,25 +8,23 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity, Table(name: 'categories')]
+#[HasLifecycleCallbacks]
 class Category
 {
+    use Traits\HasTimestamps;
+
     #[Id, Column(options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
     #[Column(length: 255)]
     private string $name;
-
-    #[Column(name: 'created_at', type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private DateTime $createdAt;
-
-    #[Column(name: 'updated_at', type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private DateTime $updatedAt;
 
     #[ManyToOne(inversedBy: 'categories')]
     private User $user;

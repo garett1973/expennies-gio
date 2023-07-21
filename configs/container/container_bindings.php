@@ -5,12 +5,14 @@ declare(strict_types = 1);
 use App\Auth;
 use App\Config;
 use App\Contracts\AuthInterface;
+use App\Contracts\CategoryServiceInterface;
 use App\Contracts\RequestValidatorFactoryInterface;
 use App\Contracts\SessionInterface;
 use App\Contracts\UserProviderServiceInterface;
 use App\Enum\AppEnvironment;
 use App\Enum\SameSite;
 use App\RequestValidators\RequestValidatorFactory;
+use App\Services\CategoryService;
 use App\Services\UserProviderService;
 use App\Session;
 use Doctrine\ORM\EntityManager;
@@ -80,7 +82,7 @@ return [
     ResponseFactoryInterface::class => static fn(App $app) => $app->getResponseFactory(),
     AuthInterface::class => static fn(ContainerInterface $container) => $container->get(Auth::class),
     UserProviderServiceInterface::class => static fn(ContainerInterface $container) => $container->get(UserProviderService::class),
-    SessionInterface::class => static fn(Config $config) => new Session(
+        SessionInterface::class => static fn(Config $config) => new Session(
         new SessionConfig(
             $config->get('session.name', ''),
             $config->get('session.flash_name', 'flash'),
