@@ -24,8 +24,12 @@ return function (App $app) {
 
     $app->group('/categories', function (RouteCollectorProxy $categories) {
         $categories->get('', [CategoriesController::class, 'index']);
+        $categories->get('/load', [CategoriesController::class, 'load']);
         $categories->post('', [CategoriesController::class, 'store']);
-        $categories->delete('/{id}', [CategoriesController::class, 'delete']);
-        $categories->get('/{id}', [CategoriesController::class, 'get']);
+        $categories->delete('/{id:[0-9]+}', [CategoriesController::class, 'delete']);
+        $categories->get('/{id:[0-9]+}', [CategoriesController::class, 'get']);
+        $categories->post('/{id:[0-9]+}', [CategoriesController::class, 'update']);
     })->add(AuthMiddleware::class);
+
+     // {id:[0-9]+} is a regex that matches only numbers
 };

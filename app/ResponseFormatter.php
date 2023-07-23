@@ -2,7 +2,6 @@
 
 namespace App;
 
-use JsonException;
 use Psr\Http\Message\ResponseInterface;
 
 class ResponseFormatter

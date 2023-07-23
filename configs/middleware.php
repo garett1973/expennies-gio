@@ -24,6 +24,7 @@ return static function (App $app) {
     $app->add(TwigMiddleware::create($app, $container->get(Twig::class)));
     $app->add(ValidationExceptionMiddleware::class);
     $app->add(ValidationErrorsMiddleware::class);
+    $app->addBodyParsingMiddleware();
     $app->add(OldFormDataMiddleware::class);
     $app->add(StartSessionsMiddleware::class);
 

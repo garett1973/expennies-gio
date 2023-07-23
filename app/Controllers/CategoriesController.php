@@ -4,7 +4,9 @@ namespace App\Controllers;
 
 
 use App\Contracts\RequestValidatorFactoryInterface;
+use App\Entity\Category;
 use App\RequestValidators\CreateCategoryRequestValidator;
+use App\RequestValidators\UpdateCategoryRequestValidator;
 use App\ResponseFormatter;
 use App\Services\CategoryService;
 use Doctrine\ORM\Exception\NotSupported;
@@ -75,14 +77,13 @@ class CategoriesController
     {
         $this->categoryService->delete((int) $args['id']);
 
-        return $response->withHeader('Location', '/categories')->withStatus(302);
+        return $response;
     }
 
     // function get
 
     /**
      * @throws NotSupported
-     * @throws JsonException
      */
     public function get(Request $request, Response $response, array $args): Response
     {
@@ -98,5 +99,57 @@ class CategoriesController
         ];
 
         return $this->responseFormatter->asJson($response, $data);
+    }
+
+    // function update
+
+    /**
+     * @throws OptimisticLockException
+     * @throws NotSupported
+     * @throws ORMException
+     */
+    public function update(Request $request, Response $response, array $args): Response
+    {
+        $data = $this->requestValidatorFactory
+            ->make(UpdateCategoryRequestValidator::class)
+            ->validate($args + $request->getParsedBody());
+
+        $category = $this->categoryService->getById((int) $data['id']);
+
+        if ($category === null) {
+            return $response->withStatus(404);
+        }
+
+        $this->categoryService->update($category, $data['name']);
+
+        return $response;
+    }
+
+    // function load
+
+    /**
+     * @throws NotSupported
+     */
+    public function load(Request $request, Response $response): Response
+    {
+        $params = $request->getQueryParams();
+        $categories = $this->categoryService->getPaginatedCategories((int) $params['start'], (int) $params['length']);
+        $formatter = static function (Category $category) {
+            return [
+                'id' => $category->getId(),
+                'name' => $category->getName(),
+                'createdAt' => $category->getCreatedAt()->format('m/d/Y g:i A'),
+                'updatedAt' => $category->getUpdatedAt()->format('m/d/Y g:i A'),
+            ];
+        };
+
+        return $this->responseFormatter->asJson(
+            $response,
+            [
+                'data' => array_map($formatter, iterator_to_array($categories)),
+                'draw' => (int) ($params['draw'] ?? 0),
+                'recordsTotal' => count($categories),
+                'recordsFiltered' => count($categories),
+        ]);
     }
 }

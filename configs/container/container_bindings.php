@@ -9,6 +9,7 @@ use App\Contracts\CategoryServiceInterface;
 use App\Contracts\RequestValidatorFactoryInterface;
 use App\Contracts\SessionInterface;
 use App\Contracts\UserProviderServiceInterface;
+use App\Csrf;
 use App\Enum\AppEnvironment;
 use App\Enum\SameSite;
 use App\RequestValidators\RequestValidatorFactory;
@@ -94,5 +95,6 @@ return [
 
     RequestValidatorFactoryInterface::class => static fn(ContainerInterface $container) =>
     $container->get(RequestValidatorFactory::class),
-    'csrf' => static fn(ResponseFactoryInterface $responseFactory) => new Guard($responseFactory, persistentTokenMode: true),
+    'csrf' => static fn(ResponseFactoryInterface $responseFactory, Csrf $csrf) => new Guard($responseFactory,
+    failureHandler: $csrf->failureHandler(), persistentTokenMode: true),
 ];
