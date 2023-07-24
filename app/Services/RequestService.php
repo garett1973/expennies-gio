@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Contracts\SessionInterface;
+use App\DataObjects\DataTableQueryParams;
 use Psr\Http\Message\ServerRequestInterface;
 
 class RequestService
@@ -33,5 +34,22 @@ class RequestService
     public function isXhr(ServerRequestInterface $request): bool
     {
         return $request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest';
+    }
+
+    public function getDataTableQueryParams(ServerRequestInterface $request): DataTableQueryParams
+    {
+        $params = $request->getQueryParams();
+
+        $orderBy = $params['columns'][$params['order'][0]['column']]['data'] ?? 'id';
+        $orderDirection = $params['order'][0]['dir'] ?? 'DESC';
+
+        return new DataTableQueryParams(
+            (int) $params['start'],
+            (int) $params['length'],
+            $orderBy,
+            $orderDirection,
+            $params['search']['value'] ?? '',
+            (int) $params['draw'],
+        );
     }
 }

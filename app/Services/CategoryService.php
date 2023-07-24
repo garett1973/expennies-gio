@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DataObjects\DataTableQueryParams;
 use App\Entity\Category;
 use App\Entity\User;
 use Doctrine\ORM\EntityManager;
@@ -41,19 +42,27 @@ class CategoryService
     }
 
     /**
-     * @param int $start
-     * @param int $length
+     * @param DataTableQueryParams $params
      * @return Paginator
      * @throws NotSupported
      */
-    public function getPaginatedCategories(int $start, int $length): Paginator
+    public function getPaginatedCategories(DataTableQueryParams $params): Paginator
     {
-        $query = $this->entityManager->getRepository(Category::class)
+        $query = $this->entityManager
+            ->getRepository(Category::class)
             ->createQueryBuilder('c')
-            ->orderBy('c.id', 'DESC')
-            ->setFirstResult($start)
-            ->setMaxResults($length)
-            ->getQuery();
+            ->setFirstResult($params->start)
+            ->setMaxResults($params->length);
+
+        $orderBy = in_array($params->orderBy, ['name', 'createdAt', 'updatedAt']) ? $params->orderBy : 'updatedAt';
+        $orderDirection = in_array($params->orderDirection, ['ASC', 'DESC']) ? $params->orderDirection : 'DESC';
+
+        if (! empty($params->searchValue)) {
+            $query->where('c.name LIKE :search')
+                ->setParameter('search', '%' . addcslashes($params->searchValue, '%_') . '%');
+        }
+
+        $query->orderBy('c.' . $orderBy, $orderDirection);
         return new Paginator($query);
     }
 
