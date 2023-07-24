@@ -40,8 +40,13 @@ class RequestService
     {
         $params = $request->getQueryParams();
 
+//        var_dump($params);
+
         $orderBy = $params['columns'][$params['order'][0]['column']]['data'] ?? 'id';
         $orderDirection = $params['order'][0]['dir'] ?? 'DESC';
+
+//        var_dump($orderBy);
+//        var_dump($orderDirection);
 
         return new DataTableQueryParams(
             (int) $params['start'],

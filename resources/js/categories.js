@@ -29,7 +29,7 @@ window.addEventListener('DOMContentLoaded', function () {
         ]
     });
 
-    document.querySelector(('#categoriesTable')).addEventListener('click', function (event) {
+    document.querySelector('#categoriesTable').addEventListener('click', function (event) {
         const editBtn = event.target.closest('.edit-category-btn');
         const deleteBtn = event.target.closest('.delete-category-btn');
 

@@ -55,7 +55,8 @@ class CategoryService
             ->setMaxResults($params->length);
 
         $orderBy = in_array($params->orderBy, ['name', 'createdAt', 'updatedAt']) ? $params->orderBy : 'updatedAt';
-        $orderDirection = in_array($params->orderDirection, ['ASC', 'DESC']) ? $params->orderDirection : 'DESC';
+        $orderDirection = in_array($params->orderDirection, ['asc', 'desc']) ? $params->orderDirection : 'asc';
+
 
         if (! empty($params->searchValue)) {
             $query->where('c.name LIKE :search')
