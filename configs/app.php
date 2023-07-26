@@ -3,6 +3,7 @@
 declare(strict_types = 1);
 
 use App\Enum\AppEnvironment;
+use App\Enum\StorageDriver;
 
 $appEnv = $_ENV['APP_ENV'] ?? AppEnvironment::Production->value;
 $appFormattedName = strtolower(str_replace(' ', '_', $_ENV['APP_NAME']));
@@ -33,5 +34,8 @@ return [
         'secure'   => (bool) ($_ENV['SESSION_SECURE_COOKIE'] ?? 1),
         'httponly' => true,
         'samesite' => $_ENV['SESSION_SAMESITE'] ?? 'lax',
+    ],
+    'storage' => [
+        'driver' => StorageDriver::Local,
     ]
 ];

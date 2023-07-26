@@ -12,11 +12,23 @@ const ajax = (url, method = 'GET', data = null, domElement = null) => {
     const csrfMethods = new Set(['post', 'put', 'patch', 'delete'])
 
     if (csrfMethods.has(method)) {
+        let additionalFields = {...getCsrfFields()}
+
         if (method !== 'post') {
             options.method = 'post'
-            data = {...data, _METHOD: method.toUpperCase()}
+
+            additionalFields._METHOD = method.toUpperCase()
         }
-        options.body = JSON.stringify({...data, ...getCsrfFields()})
+        if (data instanceof FormData) {
+            for (const additionalField in additionalFields) {
+                data.append(additionalField, additionalFields[additionalField])
+            }
+            delete options.headers['Content-Type'];
+
+            options.body = data;
+        } else {
+            options.body = JSON.stringify({...data, ...additionalFields})
+        }
     } else if (method === 'get') {
         url += '?' + (new URLSearchParams(data)).toString();
     }
@@ -26,7 +38,7 @@ const ajax = (url, method = 'GET', data = null, domElement = null) => {
             clearValidationErrors(domElement);
         }
 
-        if (! response.ok) {
+        if (!response.ok) {
             if (response.status === 422) {
                 response.json().then(errors => {
                     handleValidationErrors(errors, domElement);
@@ -48,11 +60,11 @@ function handleValidationErrors(errors, domElement) {
         element.classList.add('is-invalid');
 
         // for (const error of errors[name]) { // version 1
-            const errorDiv = document.createElement('div');
-            errorDiv.classList.add('invalid-feedback');
-            // errorDiv.innerText = error; // version 1
-            errorDiv.textContent = errors[name][0];
-            element.parentNode.appendChild(errorDiv);
+        const errorDiv = document.createElement('div');
+        errorDiv.classList.add('invalid-feedback');
+        // errorDiv.innerText = error; // version 1
+        errorDiv.textContent = errors[name][0];
+        element.parentNode.appendChild(errorDiv);
         // } // version 1
     }
 }
@@ -81,5 +93,5 @@ function getCsrfFields() {
     }
 }
 
-export {ajax, get, post, del }
+export {ajax, get, post, del}
 

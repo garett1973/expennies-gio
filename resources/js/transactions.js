@@ -5,6 +5,7 @@ import DataTable from 'datatables.net'
 window.addEventListener('DOMContentLoaded', () => {
     const newTransactionModal = new Modal(document.getElementById('newTransactionModal'));
     const editTransactionModal = new Modal(document.getElementById('editTransactionModal'));
+    const uploadReceiptModal = new Modal(document.getElementById('uploadReceiptModal'));
 
     const table = new DataTable('#transactionsTable', {
         serverSide: true,
@@ -21,7 +22,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     }
                 ).format(row.amount)
             },
-            { data: 'category', sortable: false },
+            { data: 'category' },
             { data: 'date' },
             {
                 sortable: false,
@@ -33,6 +34,9 @@ window.addEventListener('DOMContentLoaded', () => {
                         <button class='btn btn-outline-primary edit-transaction-btn ms-2' data-id='${row.id}'>
                             <i class='bi bi-pencil'></i>
                         </button>
+                        <button class='btn btn-outline-primary open-receipt-upload-btn ms-2' data-id='${row.id}'>
+                            <i class='bi bi-upload'></i>
+                        </button>
                     </div>
             `
             }
@@ -42,14 +46,15 @@ window.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#transactionsTable').addEventListener('click', e => {
         const editBtn = e.target.closest('.edit-transaction-btn');
         const deleteBtn = e.target.closest('.delete-transaction-btn');
+        const uploadReceiptBtn = e.target.closest('.open-receipt-upload-btn');
 
         if (editBtn) {
             const transactionId = editBtn.getAttribute('data-id');
 
             get(`/transactions/${transactionId}`)
                 .then(response => response.json())
-                .then(response => openEditTransactionModal(editTransactionModal, response));
-                } else {
+                .then(response => openEditTransactionModal(editTransactionModal, response))
+        } else if (deleteBtn) {
             const transactionId = deleteBtn.getAttribute('data-id');
 
             if (confirm('Are you sure you want to delete this transaction?')) {
@@ -60,6 +65,13 @@ window.addEventListener('DOMContentLoaded', () => {
                         }
                     });
             }
+        } else if (uploadReceiptBtn) {
+            const transactionId = uploadReceiptBtn.getAttribute('data-id');
+
+            uploadReceiptModal._element
+                .querySelector('.upload-receipt-btn')
+                .setAttribute('data-id', transactionId);
+            uploadReceiptModal.show();
         }
     });
 
@@ -80,6 +92,26 @@ window.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     table.draw();
                     editTransactionModal.hide();
+                }
+            })
+    });
+
+    document.querySelector('.upload-receipt-btn').addEventListener('click', (e) => {
+        const transactionId = e.currentTarget.getAttribute('data-id');
+        const formData = new FormData();
+        const files = uploadReceiptModal._element.querySelector('input[type="file"]').files;
+
+        for (let i = 0; i < files.length; i++) {
+            formData.append('receipt', files[i]);
+        }
+
+        console.log('formData', formData);
+
+        post(`/transactions/${transactionId}/receipts`, formData, uploadReceiptModal._element)
+            .then(response => {
+                if (response.ok) {
+                    table.draw();
+                    uploadReceiptModal.hide();
                 }
             })
     });

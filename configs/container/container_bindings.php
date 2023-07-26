@@ -12,12 +12,15 @@ use App\Contracts\UserProviderServiceInterface;
 use App\Csrf;
 use App\Enum\AppEnvironment;
 use App\Enum\SameSite;
+use App\Enum\StorageDriver;
 use App\RequestValidators\RequestValidatorFactory;
 use App\Services\CategoryService;
 use App\Services\UserProviderService;
 use App\Session;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;
@@ -97,4 +100,11 @@ return [
     $container->get(RequestValidatorFactory::class),
     'csrf' => static fn(ResponseFactoryInterface $responseFactory, Csrf $csrf) => new Guard($responseFactory,
     failureHandler: $csrf->failureHandler(), persistentTokenMode: true),
+    Filesystem::class=> static function(Config $config) {
+        $adapter = match($config->get('storage.driver')) {
+            StorageDriver::Local => new LocalFilesystemAdapter(STORAGE_PATH ),
+//            's3' => new S3FilesystemAdapter(STORAGE_PATH)
+        };
+        return new Filesystem($adapter);
+    },
 ];
