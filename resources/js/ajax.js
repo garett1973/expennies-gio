@@ -47,12 +47,13 @@ function handleValidationErrors(errors, domElement) {
         const element = domElement.querySelector(`[name = "${name}"]`);
         element.classList.add('is-invalid');
 
-        for (const error of errors[name]) {
+        // for (const error of errors[name]) { // version 1
             const errorDiv = document.createElement('div');
             errorDiv.classList.add('invalid-feedback');
-            errorDiv.innerText = error;
+            // errorDiv.innerText = error; // version 1
+            errorDiv.textContent = errors[name][0];
             element.parentNode.appendChild(errorDiv);
-        }
+        // } // version 1
     }
 }
 

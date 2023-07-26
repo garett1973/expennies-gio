@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\HasTimestamps;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -9,14 +10,18 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity, Table(name: 'transactions')]
+#[HasLifecycleCallbacks]
 class Transaction
 {
+    use HasTimestamps;
+
     #[Id, Column(options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
@@ -25,12 +30,6 @@ class Transaction
 
     #[Column(name: 'amount', type: Types::DECIMAL, precision: 13, scale: 3)]
     private float $amount;
-
-    #[Column(name: 'created_at', type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private DateTime $createdAt;
-
-    #[Column(name: 'updated_at', type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
-    private DateTime $updatedAt;
 
     #[Column(name: 'date', type: 'datetime', nullable: true)]
     private ?DateTime $date;

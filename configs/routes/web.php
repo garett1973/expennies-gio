@@ -5,6 +5,7 @@ declare(strict_types = 1);
 use App\Controllers\AuthController;
 use App\Controllers\CategoryController;
 use App\Controllers\HomeController;
+use App\Controllers\TransactionController;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\GuestMiddleware;
 use Slim\App;
@@ -22,6 +23,7 @@ return function (App $app) {
 
     $app->post('/logout', [AuthController::class, 'logOut'])->add(AuthMiddleware::class);
 
+     // {id:[0-9]+} is a regex that matches only numbers
     $app->group('/categories', function (RouteCollectorProxy $categories) {
         $categories->get('', [CategoryController::class, 'index']);
         $categories->get('/load', [CategoryController::class, 'load']);
@@ -31,5 +33,13 @@ return function (App $app) {
         $categories->post('/{id:[0-9]+}', [CategoryController::class, 'update']);
     })->add(AuthMiddleware::class);
 
-     // {id:[0-9]+} is a regex that matches only numbers
+    // transactions
+    $app->group('/transactions', function (RouteCollectorProxy $transactions) {
+        $transactions->get('', [TransactionController::class, 'index']);
+        $transactions->get('/load', [TransactionController::class, 'load']);
+        $transactions->post('', [TransactionController::class, 'store']);
+        $transactions->delete('/{id:[0-9]+}', [TransactionController::class, 'delete']);
+        $transactions->get('/{id:[0-9]+}', [TransactionController::class, 'get']);
+        $transactions->post('/{id:[0-9]+}', [TransactionController::class, 'update']);
+    })->add(AuthMiddleware::class);
 };
