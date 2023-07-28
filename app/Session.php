@@ -18,8 +18,8 @@ class Session implements SessionInterface
             throw new SessionException('Session already started');
         }
 
-        if (headers_sent($fileName, $lineNumber)) {
-            throw new SessionException('Headers already sent by ' . $fileName . ' on line ' . $lineNumber . '. Cannot start session.');
+        if (headers_sent($filename, $lineNumber)) {
+            throw new SessionException('Headers already sent by ' . $filename . ' on line ' . $lineNumber . '. Cannot start session.');
         }
 
         session_set_cookie_params([

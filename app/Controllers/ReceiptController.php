@@ -16,9 +16,9 @@ class ReceiptController
     public function store(Request $request, Response $response, array $args): Response
     {
         $file = $request->getUploadedFiles()['receipt'];
-        $fileName = $file->getClientFilename();
+        $filename = $file->getClientFilename();
 
-        $this->filesystem->write('receipts/' . $fileName, $file->getStream()->getContents());
+        $this->filesystem->write('receipts/' . $filename, $file->getStream()->getContents());
 
         return $response;
     }

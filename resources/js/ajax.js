@@ -19,6 +19,7 @@ const ajax = (url, method = 'GET', data = null, domElement = null) => {
 
             additionalFields._METHOD = method.toUpperCase()
         }
+
         if (data instanceof FormData) {
             for (const additionalField in additionalFields) {
                 data.append(additionalField, additionalFields[additionalField])
@@ -45,7 +46,6 @@ const ajax = (url, method = 'GET', data = null, domElement = null) => {
                 })
             }
         }
-
         return response;
     });
 }
