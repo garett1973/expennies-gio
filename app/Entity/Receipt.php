@@ -16,8 +16,29 @@ class Receipt
     #[Id, Column(options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    #[Column(name: 'file_name', length: 255)]
-    private string $fileName;
+    #[Column(name: 'filename', length: 255)]
+    private string $filename;
+
+    #[Column(name: 'storage_filename', length: 255)]
+    private string $storageFilename;
+
+    /**
+     * @return string
+     */
+    public function getStorageFilename(): string
+    {
+        return $this->storageFilename;
+    }
+
+    /**
+     * @param string $storageFilename
+     * @return Receipt
+     */
+    public function setStorageFilename(string $storageFilename): Receipt
+    {
+        $this->storageFilename = $storageFilename;
+        return $this;
+    }
 
     #[Column(name: 'created_at', type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
     private DateTime $createdAt;
@@ -36,18 +57,18 @@ class Receipt
     /**
      * @return string
      */
-    public function getFileName(): string
+    public function getFilename(): string
     {
-        return $this->fileName;
+        return $this->filename;
     }
 
     /**
-     * @param string $fileName
+     * @param string $filename
      * @return Receipt
      */
-    public function setFileName(string $fileName): Receipt
+    public function setFilename(string $filename): Receipt
     {
-        $this->fileName = $fileName;
+        $this->filename = $filename;
         return $this;
     }
 

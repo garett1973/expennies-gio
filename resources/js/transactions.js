@@ -97,15 +97,20 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     document.querySelector('.upload-receipt-btn').addEventListener('click', (e) => {
+        console.log('clicked upload btn');
         const transactionId = e.currentTarget.getAttribute('data-id');
         const formData = new FormData();
         const files = uploadReceiptModal._element.querySelector('input[type="file"]').files;
+
+        console.log(files);
 
         for (let i = 0; i < files.length; i++) {
             formData.append('receipt', files[i]);
         }
 
-        console.log('formData', formData);
+        console.log(formData);
+        console.log(formData['receipt'][0]);
+
 
         post(`/transactions/${transactionId}/receipts`, formData, uploadReceiptModal._element)
             .then(response => {
