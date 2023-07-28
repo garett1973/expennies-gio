@@ -101,11 +101,11 @@ window.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData();
         const files = uploadReceiptModal._element.querySelector('input[type="file"]').files;
 
+        console.log(files);
+
         for (let i = 0; i < files.length; i++) {
             formData.append('receipt', files[i]);
         }
-
-        console.log('formData', formData);
 
         post(`/transactions/${transactionId}/receipts`, formData, uploadReceiptModal._element)
             .then(response => {
