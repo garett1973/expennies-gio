@@ -4,7 +4,6 @@ namespace App\RequestValidators;
 
 use App\Contracts\RequestValidatorInterface;
 use App\Exception\ValidationException;
-use finfo;
 use Psr\Http\Message\UploadedFileInterface;
 
 class UploadReceiptRequestValidator implements RequestValidatorInterface
@@ -39,24 +38,23 @@ class UploadReceiptRequestValidator implements RequestValidatorInterface
 
         // Validate file type
         $allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf'];
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
-        $tmpFilePath = $uploadedFile->getStream()->getMetadata('uri');
-
         if (!in_array($uploadedFile->getClientMediaType(), $allowedMimeTypes, false)) {
             throw new ValidationException(['receipt' => ['File type not allowed CHECK 1']]);
         }
 
+        $tmpFilePath = $uploadedFile->getStream()->getMetadata('uri');
+        $mimeType = mime_content_type($tmpFilePath);
+        if (!in_array($mimeType, $allowedMimeTypes, false)) {
+            throw new ValidationException(['receipt' => ['File type not allowed CHECK 3']]);
+        }
+
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
         if (!in_array($extension, $allowedExtensions, false)) {
             throw new ValidationException(
                 [
                     'receipt' => ['File type not allowed CHECK 2']
                 ]);
-        }
-
-        $mimeType = mime_content_type($tmpFilePath);
-        if (!in_array($mimeType, $allowedMimeTypes, false)) {
-            throw new ValidationException(['receipt' => ['File type not allowed CHECK 3']]);
         }
 
         return $data;
