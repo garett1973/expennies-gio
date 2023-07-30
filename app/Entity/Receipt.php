@@ -16,6 +16,27 @@ class Receipt
     #[Id, Column(options: ['unsigned' => true]), GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
+    #[Column(name: 'storage_filename', length: 255)]
+    private string $storageFilename;
+
+    /**
+     * @return string
+     */
+    public function getStorageFilename(): string
+    {
+        return $this->storageFilename;
+    }
+
+    /**
+     * @param string $storageFilename
+     * @return Receipt
+     */
+    public function setStorageFilename(string $storageFilename): Receipt
+    {
+        $this->storageFilename = $storageFilename;
+        return $this;
+    }
+
     #[Column(name: 'filename', length: 255)]
     private string $filename;
 

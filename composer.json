@@ -32,7 +32,8 @@
         "twig/twig": "^3.4",
         "vlucas/phpdotenv": "^5.4",
         "vlucas/valitron": "^1.4",
-      "ext-fileinfo": "*"
+      "ext-fileinfo": "*",
+      "ext-mysqli": "*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest"

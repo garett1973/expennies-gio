@@ -59,7 +59,9 @@ class TransactionController
     {
         $data = $this->requestValidatorFactory
             ->make(TransactionRequestValidator::class)
-            ->validate($request->getParsedBody());
+            ->validate(
+                $request->getParsedBody()
+            );
 
         $this->transactionService->create(
             new TransactionData(
